@@ -67,7 +67,7 @@ def make_label(path, dict_vuln2testcase, _type):
 
             _dict_cwe2line_target = {}
             _dict_cwe2line = {}
-			for _dict in dict: 
+            for _dict in dict: 
                 for key in _dict.keys():
                     if _dict[key] not in _dict_cwe2line_target.keys():
                         _dict_cwe2line_target[_dict[key]] = [key] 
@@ -143,21 +143,21 @@ def main():
     
     path = os.path.join(lang, 'arraysuse_slices.txt')
     list_all_arraylabel = make_label(path, dict_vuln2testcase, _type)
-    dec_path = os.path.join(lang, 'array_slice_label.pkl')
+    dec_path = os.path.join(lang, 'arrayuse_slices_label.pkl')
     f = open(dec_path, 'wb')
     pickle.dump(list_all_arraylabel, f, True)
     f.close()
     
     path = os.path.join(lang, 'pointersuse_slices.txt')
     list_all_pointerlabel = make_label(path, dict_vuln2testcase, _type)
-    dec_path = os.path.join(lang, 'pointer_slice_label.pkl')
+    dec_path = os.path.join(lang, 'pointersuse_slices_label.pkl')
     f = open(dec_path, 'wb')
     pickle.dump(list_all_pointerlabel, f, True)
     f.close()
  
     path = os.path.join(lang, 'integeroverflow_slices.txt')
     list_all_exprlabel = make_label(path, dict_vuln2testcase, _type)
-    dec_path = os.path.join(lang, 'expr_slice_label.pkl')
+    dec_path = os.path.join(lang, 'integeroverflow_slices_label.pkl')
     f = open(dec_path, 'wb')
     pickle.dump(list_all_exprlabel, f, True)
     f.close()

@@ -14,7 +14,7 @@ for filename in os.listdir(slice_path):
     f = open(filepath,'r')
     slicelists = f.read().split('------------------------------')
     f.close()
-    labelpath = os.path.join(label_path,filename[:-4]+'.pkl')
+    labelpath = os.path.join(label_path,filename[:-4]+'_label.pkl')
     f = open(labelpath,'rb')
     labellists = pickle.load(f)
     f.close()
@@ -40,7 +40,8 @@ for filename in os.listdir(slice_path):
             del sentences[-1]
         labellist = labellists[index]
         for labels in labellist:
-            if 1 in labels:
+            labels = str(labels)
+            if '1' in labels:
                 label = 1
             else:
                 label = 0

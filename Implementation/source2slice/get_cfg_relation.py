@@ -268,7 +268,8 @@ def main():
     j = JoernSteps()
     j.connectToDatabase()
     all_func_node = getALLFuncNode(j)
-    for node in all_func_node:
+    for node_id in all_func_node:
+        node = getNode(j, node_id)
         testID = getFuncFile(j, node._id).split('/')[-2]
         path = os.path.join("cfg_db", testID)
 

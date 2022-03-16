@@ -459,7 +459,8 @@ def main():
     j = JoernSteps()
     j.connectToDatabase()
     all_func_node = getALLFuncNode(j)
-    for node in all_func_node:
+    for node_id in all_func_node:
+        node = getNode(j, node_id)
         testID = getFuncFile(j, node._id).split('/')[-2]
         path = os.path.join("pdg_db", testID)
 
@@ -485,7 +486,7 @@ def main():
                 fin.close()
 
             else:
-                print cfg_path
+                print 'cfg path: ', cfg_path
                 fin = open(os.path.join(cfg_path, _file))
                 cfg = pickle.load(fin)
                 fin.close()
@@ -503,21 +504,24 @@ def main():
 
             i += 1
 
+        print('Here1')
         d_use, d_def = getUseDefVarByPDG(j, opt_pdg_1)#get use and def nodedict of every cfgnode
+        print('Here2')
         opt_pdg_2 = modifyDataEdgeVal(opt_pdg_1)#not distinguish pointer and buffer it points      
-        
+        print('Here3')
         opt_pdg_3 = completeDeclStmtOfPDG(opt_pdg_2, d_use, d_def, dict_if2cfgnode, dict_cfgnode2if)
+        print('Here4')
 
         opt_pdg_4 = completeDataEdgeOfPDG(opt_pdg_3, d_use, d_def, dict_if2cfgnode, dict_cfgnode2if)#add data edge to get more info
-        
+        print('Here5')
         opted_pdg_5 = addDataEdgeOfObject(opt_pdg_4, dict_if2cfgnode, dict_cfgnode2if)
-      
+        print('Here6')
+
         #opted_pdg=deleteCDG(opted_pdg_5)
-        
 
         if not os.path.exists(path):
             os.mkdir(path)
-        print store_path, path    
+        print 'Storing: ', store_path, path    
         f = open(store_path, 'wb')
         pickle.dump(opted_pdg_5, f, True)
         f.close()

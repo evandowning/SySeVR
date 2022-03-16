@@ -128,6 +128,7 @@ def isNodeExist(g, nodeName):
 
 def getALLFuncNode(db):
     query_str = "queryNodeIndex('type:Function')"
+    query_str = "queryNodeIndex('type:Function').id"
     results = db.runGremlinQuery(query_str)
     return results
 
@@ -141,8 +142,13 @@ def getFuncNode(db, func_name):
 def getFuncFile(db, func_id):
     query_str = "g.v(%d).in('IS_FILE_OF').filepath" % func_id
     ret = db.runGremlinQuery(query_str)
-    print ret
     return ret[0]
+
+
+def getNode(db, func_id):
+    query_str = "g.v(%d)" % func_id
+    ret = db.runGremlinQuery(query_str)
+    return ret
 
 
 def getCFGNodes(db, func_id):
