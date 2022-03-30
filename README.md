@@ -41,11 +41,16 @@ SeVC dataset focuses on 1,591 open source C/C++ programs from the NVD and 14,000
     $ find mydata -type f -not -name '*.c*' -delete
     $ time /data/evan/joern/jdk1.7.0_80/bin/java -jar /data/evan/joern/joern-0.3.1/bin/joern.jar /data/evan/SySeVR/mydata/ > joern_stdout.txt 2> joern_stderr.txt
     # This will create a directory ".joernIndex/" in the current working directory
+    # Make sure ".joernIndex/" doesn't exist before running this.
 
     # Modify Neo4j config files as needed: https://joern.readthedocs.io/en/latest/import.html
 
     $ cd /data/joern/neo4j-community-2.1.8/
     $ ulimit -n 60000
+    $ vim conf/conf/neo4j-wrapper.conf
+        Add "wrapper.java.maxmemory=29000"
+        Add "wrapper.java.additional=-XX:PermSize=256m"
+        Add "wrapper.java.additional=-XX:MaxPermSize=512m"
     $ JAVA_HOME=/data/evan/joern/jdk1.7.0_80/ ./bin/neo4j console
 
     $ cd Implementation/source2slice/
@@ -58,37 +63,36 @@ SeVC dataset focuses on 1,591 open source C/C++ programs from the NVD and 14,000
     $ mkdir pdg_db/
     $ python complete_PDG.py
 
-    #TODO
-    # Takes about 
+    # Takes about 608 minutes (10 hours)
     $ mkdir dict_call2cfgNodeID_funcID/
     $ python access_db_operate.py
 
-    #TODO
-    # Takes about 
+    # Restart Neo4j in case it's using too much RAM.
+
+    # Takes about 5 hours
     $ python points_get.py
 
-    #TODO
-    # Takes about 
-    $ mkdir -p ./C/test_data/4/
+    # Takes about 182 minutes
+    $ rm -rf ./C/test_data/4; mkdir -p ./C/test_data/4/
+    $ rm -rf ./pdg_db/testCode/; mkdir -p ./pdg_db/testCode/
     $ python extract_df.py
 
-    #TODO
     # Takes about 
     $ python make_label.py
 
-    $ mkdir slices/
-    $ find ./C/ -type f -name '*.txt' -exec cp {} slices/ \;
-    $ mkdir label_source/
-    $ find ./C/ -type f -name '*.pkl' -exec cp {} label_source/ \;
-    $ mkdir slice_label/
+    $ rm -rf slices/; mkdir slices/; find ./C/ -type f -name '*.txt' -exec cp {} slices/ \;
+    $ rm -rf label_source/; mkdir label_source/; find ./C/ -type f -name '*.pkl' -exec cp {} label_source/ \;
+    $ rm -rf slice_label/; mkdir slice_label/
 
-    #TODO
     # Takes about 
     $ python data_preprocess.py
 
     # Stop Neo4j (don't need it running anymore)
     ```
   * Install anaconda and create an environment that uses Python 3.6
+    ```
+    $ pip install -r /home/evan/repo/VulDeeLocator/requirements.txt
+    ```
   * Preprocess data
     ```
     $ cd Implementation/data_preprocess/
@@ -97,13 +101,31 @@ SeVC dataset focuses on 1,591 open source C/C++ programs from the NVD and 14,000
     $ mkdir ./data/label_source/
     $ mkdir ./data/corpus/
 
-    $ cp -r ../source2slice/slice_label ./data/data_source/SARD/
-    $ cp -r ../source2slice/label_source/ ./data/label_source/SARD/
+    $ cp ../source2slice/slice_label/* ./data/data_source/SARD/
+    $ cp ../source2slice/label_source/* ./data/label_source/SARD/
     $ mkdir ./data/corpus/SARD/
 
-    #TODO
     $ python process_dataflow_func.py
+
+    $ mkdir ./w2v_model/
+    $ python create_w2vmodel.py
+
+    $ mkdir -p ./data/vector/SARD/
+    $ mkdir -p ./dl_input/cdg_ddg/train/
+    $ mkdir -p ./dl_input/cdg_ddg/test/
+    $ python get_dl_input.py
+
+    $ mkdir -p ./dl_input_shuffle/cdg_ddg/train/
+    $ mkdir -p ./dl_input_shuffle/cdg_ddg/test/
+    $ conda install -c glemaitre imbalanced-learn
+    $ python dealrawdata.py
     ```
   * Train data
     ```
+    $ cd Implementation/model/
+
+    #TODO
+    $ mkdir ./model/
+    $ mkdir -p ./result/BGRU/
+    $ python bgru.py
     ```

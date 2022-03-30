@@ -43,33 +43,66 @@ def get_exprstmt_node(db):
     results = results_1 + results_2
 
     return results
-    
 
+#TODO
 def get_pointers_node(db):
-    list_pointers_node = []
-    query_iddecl_str = 'queryNodeIndex("type:IdentifierDeclStatement")'
+#   list_pointers_node = []
+#   query_iddecl_str = 'queryNodeIndex("type:IdentifierDeclStatement")'
 
+#   results = db.runGremlinQuery(query_iddecl_str)
+
+#   if results != []:
+#       for re in results:
+#           code = re.properties['code']
+#           if code.find(' = ') != -1:
+#               code = code.split(' = ')[0]
+
+#           if code.find('*') != -1:
+#               list_pointers_node.append(re)
+
+#   query_param_str = 'queryNodeIndex("type:Parameter")'
+#   results = db.runGremlinQuery(query_param_str)
+#   if results != []:
+#       for re in results:
+#           code = re.properties['code']
+#           if code.find(' = ') != -1:
+#               code = code.split(' = ')[0]
+
+#           if code.find('*') != -1:
+#               list_pointers_node.append(re)
+
+    list_pointers_node = set()
+
+    query_iddecl_str = 'queryNodeIndex("type:IdentifierDeclStatement").id'
     results = db.runGremlinQuery(query_iddecl_str)
+    for node_id in results:
+        query_str = "g.v(%d)" % node_id
+        node = db.runGremlinQuery(query_str)
+        code = node.properties['code']
 
-    if results != []:
-        for re in results:
-            code = re.properties['code']
-            if code.find(' = ') != -1:
-                code = code.split(' = ')[0]
+        if code.find(' = ') != -1:
+            code = code.split(' = ')[0]
 
-            if code.find('*') != -1:
-                list_pointers_node.append(re)
+        if code.find('*') != -1:
+            list_pointers_node.add(node_id)
 
-    query_param_str = 'queryNodeIndex("type:Parameter")'
+#   print(len(list_pointers_node))
+
+    query_param_str = 'queryNodeIndex("type:Parameter").id'
     results = db.runGremlinQuery(query_param_str)
-    if results != []:
-        for re in results:
-            code = re.properties['code']
-            if code.find(' = ') != -1:
-                code = code.split(' = ')[0]
-                
-            if code.find('*') != -1:
-                list_pointers_node.append(re)
+    for node_id in results:
+        query_str = "g.v(%d)" % node_id
+        node = db.runGremlinQuery(query_str)
+        code = node.properties['code']
+
+        if code.find(' = ') != -1:
+            code = code.split(' = ')[0]
+
+        if code.find('*') != -1:
+            list_pointers_node.add(node_id)
+
+#   print(len(list_pointers_node))
+#   sys.exit()
 
     return list_pointers_node
 
@@ -127,7 +160,6 @@ def isNodeExist(g, nodeName):
 
 
 def getALLFuncNode(db):
-    query_str = "queryNodeIndex('type:Function')"
     query_str = "queryNodeIndex('type:Function').id"
     results = db.runGremlinQuery(query_str)
     return results
@@ -403,8 +435,8 @@ def getCalleeNode(db, func_id):
 
 def get_all_calls_node(db, testID):
     list_all_funcID = [node._id for node in getFuncNodeInTestID(db, testID)]
-    print "list_all_funcID", list_all_funcID
-    print "lenth", len(list_all_funcID)
+#   print "list_all_funcID", list_all_funcID
+#   print "lenth", len(list_all_funcID)
     if len(list_all_funcID)>130:
         print ">100"
         return False
@@ -437,7 +469,7 @@ def getClassByObjectAndFuncID(db, objectname, func_id):
     all_cfg_node = getCFGNodes(db, func_id)
     for cfg_node in all_cfg_node:
         if cfg_node.properties['code'] == objectname and cfg_node.properties['type'] == 'Statement':
-            print objectname, func_id, cfg_node.properties['code'], cfg_node._id
+#           print objectname, func_id, cfg_node.properties['code'], cfg_node._id
             query_str_1 = "queryNodeIndex('type:Statement AND code:%s AND functionId:%s')" % (objectname, func_id)
             results_1 = db.runGremlinQuery(query_str_1)
             if results_1 == []:
@@ -454,7 +486,7 @@ def getClassByObjectAndFuncID(db, objectname, func_id):
 
             classname = False
             for node in results_2:
-                print node.properties['location'].split(':')[0], location_row
+#               print node.properties['location'].split(':')[0], location_row
                 if node.properties['location'].split(':')[0] == location_row:
                     classname = node.properties['code']
                     break
@@ -482,7 +514,7 @@ def getDeleteNode(db, func_id):
 
 def get_all_delete_node(db, testID):
     list_all_funcID = [node._id for node in getFuncNodeInTestID(db, testID)]
-    print "list_all_funcID", list_all_funcID
+#   print "list_all_funcID", list_all_funcID
 
     list_all_delete_node = []
     for func_id in list_all_funcID:#allfile in a testID
@@ -502,7 +534,7 @@ def getDeclNode(db, func_id):
 
 def get_all_iddecl_node(db, testID):
     list_all_funcID = [node._id for node in getFuncNodeInTestID(db, testID)]
-    print "list_all_funcID", list_all_funcID
+#   print "list_all_funcID", list_all_funcID
 
     list_all_decl_node = []
     for func_id in list_all_funcID:#allfile in a testID
@@ -542,7 +574,7 @@ def getCallGraph(db, testID):
             classname = function_name.split('::')[0].strip()
 
             if func_name == classname:#is a class::class, is a statementnode or a iddeclnode
-                print 1
+#               print 1
                 list_callee_id = []
                 list_delete_node = get_all_delete_node(db, testID)
                 if list_delete_node == False:
@@ -627,7 +659,7 @@ def getCallGraph(db, testID):
                         continue
 
             else:
-                print 3
+#               print 3
                 tag = 'func'
                 list_callee_id = []
                 for _t in list_all_callee:#_t is a tuple, _t[0] is nodeid, 1 is funcname, 2 is func_id
@@ -698,7 +730,7 @@ if __name__ == '__main__':
 
     pdg_db_path = "pdg_db"
     list_testID = os.listdir(pdg_db_path)
-    print list_testID
+#   print list_testID
     for testID in list_testID:
         #if testID != '69055':
         #    continue
@@ -725,7 +757,7 @@ if __name__ == '__main__':
 
         filepath = os.path.join("dict_call2cfgNodeID_funcID", str(testID), "dict.pkl")
         
-        print _dict
+#       print _dict
         f = open(filepath, 'wb')
         pickle.dump(_dict, f, True)
         f.close()

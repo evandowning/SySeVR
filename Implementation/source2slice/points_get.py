@@ -55,7 +55,8 @@ def get_all_sensitiveAPI(db):
 def get_all_pointer(db):
     _dict = {}
     list_pointers_node = get_pointers_node(db)
-    for cfgnode in list_pointers_node:
+    for node_id in list_pointers_node:
+        cfgnode = getNode(db, node_id)
         file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
         testID = file_path.split('/')[-2]
         pointer_defnode = get_def_node(db, cfgnode._id)
@@ -97,7 +98,8 @@ def get_all_array(db):
 def get_all_pointer_use(db):
     _dict = {}
     list_pointers_node = get_pointers_node(db)
-    for cfgnode in list_pointers_node:
+    for node_id in list_pointers_node:
+        cfgnode = getNode(db, node_id)
         file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
         testID = file_path.split('/')[-2]
         pointer_defnode = get_def_node(db, cfgnode._id)
@@ -125,7 +127,7 @@ def get_all_pointer_use(db):
             final_list=[]
             for i in list_usenodes:
                 #print(i)
-                if 'location' in str(i):
+                if 'location:' in str(i):
                     print(str(i))
                     location=str(i).split(",type:")[0].split("location:")[1][1:-1].split(":")
                     count=int(location[0])
@@ -228,28 +230,26 @@ def get_all_integeroverflow_point(db):
 if __name__ == '__main__':
     j = JoernSteps()
     j.connectToDatabase()
-    
+
     _dict = get_all_sensitiveAPI(j)
     f = open("sensifunc_slice_points.pkl", 'wb')
     pickle.dump(_dict, f, True)
     f.close()
-    print _dict
-    
+#   print _dict
+
     _dict = get_all_pointer_use(j)
     f = open("pointuse_slice_points.pkl", 'wb')
     pickle.dump(_dict, f, True)
     f.close()
-    print _dict 
-    
+#   print _dict
+
     _dict = get_all_array_use(j)
-    f = open("arrayuse_slice_points.pkl", 'wb')
+    f = open("arraysuse_slice_points.pkl", 'wb')
     pickle.dump(_dict, f, True)
     f.close()
-    print _dict
-    
+#   print _dict
+
     _dict = get_all_integeroverflow_point(j)
     f = open("integeroverflow_slice_points_new.pkl", 'wb')
     pickle.dump(_dict, f, True)
     f.close()
-	
-    

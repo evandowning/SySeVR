@@ -57,7 +57,7 @@ def evaluate_w2vModel(w2vModelPath):
         print(model.most_similar_cosmul(positive=[sign], topn=10))
     
 def main():
-    dec_tokenFlaw_path = ['./data/cdg_ddg/corpus/']
+    dec_tokenFlaw_path = ['./data/corpus/SARD/']
     w2v_model_path = "./w2v_model/wordmodel3" 
     generate_w2vModel(dec_tokenFlaw_path, w2v_model_path)
     evaluate_w2vModel(w2v_model_path)

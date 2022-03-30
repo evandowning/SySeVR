@@ -6,7 +6,6 @@ This python file is used to train data in CNN model
 from __future__ import absolute_import
 from __future__ import print_function
 import pickle
-import cPickle
 import numpy as np
 import random
 import time

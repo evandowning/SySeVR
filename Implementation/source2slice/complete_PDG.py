@@ -504,18 +504,12 @@ def main():
 
             i += 1
 
-        print('Here1')
         d_use, d_def = getUseDefVarByPDG(j, opt_pdg_1)#get use and def nodedict of every cfgnode
-        print('Here2')
         opt_pdg_2 = modifyDataEdgeVal(opt_pdg_1)#not distinguish pointer and buffer it points      
-        print('Here3')
         opt_pdg_3 = completeDeclStmtOfPDG(opt_pdg_2, d_use, d_def, dict_if2cfgnode, dict_cfgnode2if)
-        print('Here4')
 
         opt_pdg_4 = completeDataEdgeOfPDG(opt_pdg_3, d_use, d_def, dict_if2cfgnode, dict_cfgnode2if)#add data edge to get more info
-        print('Here5')
         opted_pdg_5 = addDataEdgeOfObject(opt_pdg_4, dict_if2cfgnode, dict_cfgnode2if)
-        print('Here6')
 
         #opted_pdg=deleteCDG(opted_pdg_5)
 

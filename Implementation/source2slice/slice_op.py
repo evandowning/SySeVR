@@ -40,7 +40,7 @@ def program_slice_backwards(pdg, list_startNode):#startNode is a list
                 not_scan_list.append(node['name'])
                 break
         
-    print("list_all_node:", list_all_node)
+#   print("list_all_node:", list_all_node)
     list_ordered_node = sortedNodesByLoc(list_all_node)
 
     _list_re = []
