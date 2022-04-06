@@ -3,6 +3,8 @@
 This python file is used to train four class focus data in blstm model
 
 '''
+import sys
+sys.path.insert(0, '/home/evan/repo/VulDeeLocator/src/')    # contains keras source
 
 from keras.preprocessing import sequence
 from keras.optimizers import SGD, RMSprop, Adagrad, Adam, Adadelta
@@ -22,7 +24,6 @@ import os
 RANDOMSEED = 2018  # for reproducibility
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
 
 def build_model(maxlen, vector_dim, layers, dropout):
     print('Build model...')
@@ -58,7 +59,7 @@ def main(traindataSet_path, testdataSet_path, realtestpath, weightpath, resultpa
     labels = []
     testcases = []
     for filename in os.listdir(traindataSet_path):
-        if(filename.endswith(".pkl") is True):
+        if(filename.endswith(".pkl") is False):
             continue
         print(filename)
         f = open(os.path.join(traindataSet_path, filename),"rb")
@@ -131,9 +132,9 @@ def main(traindataSet_path, testdataSet_path, realtestpath, weightpath, resultpa
 
     f_TP = open("./result_analyze/BGRU/TP_filenames.txt","ab+")
     for i in range(len(result[1])):
-	TP_index = result[1][i]
-	f_TP.write(str(filenames[TP_index])+'\n')
-		
+        TP_index = result[1][i]
+        f_TP.write(str(filenames[TP_index])+'\n')
+
     f_FP = open("./result_analyze/BGRU/FP_filenames.txt","ab+")
     for j in range(len(result[2])):
         FP_index = result[2][j]
@@ -200,11 +201,15 @@ def testrealdata(realtestpath, weightpath, batch_size, maxlen, vector_dim, layer
         f = open(realtestpath+filename, "rb")
         realdata = pickle.load(f,encoding="latin1")
         f.close()
-    
-        labels = model.predict(x = realdata[0],batch_size = 1)
+
+        d = process_sequences_shape(realdata[0],maxlen,vector_dim)
+
+        labels = model.predict(x = d,batch_size = 1)
         for i in range(len(labels)):
             if labels[i][0] >= 0.5:
                 print(realdata[1][i])
+            else:
+                print('no detect')
 
 
 if __name__ == "__main__":
@@ -213,10 +218,11 @@ if __name__ == "__main__":
     maxLen = 500
     layers = 2
     dropout = 0.2
-    traindataSetPath = "./dl_input_shuffle/cdg_ddg/train/"
-    testdataSetPath = "./dl_input_shuffle/cdg_ddg/test/"
+    traindataSetPath = "../data_preprocess/dl_input_shuffle/cdg_ddg/train/"
+    testdataSetPath = "../data_preprocess/dl_input_shuffle/cdg_ddg/test/"
     realtestdataSetPath = "data/"
     weightPath = './model/BRGU'
     resultPath = "./result/BGRU/BGRU"
     main(traindataSetPath, testdataSetPath, realtestdataSetPath, weightPath, resultPath, batchSize, maxLen, vectorDim, layers, dropout)
+    testrealdata(testdataSetPath, weightPath, batchSize, maxLen, vectorDim, layers, dropout)
     #testrealdata(realtestdataSetPath, weightPath, batchSize, maxLen, vectorDim, layers, dropout)

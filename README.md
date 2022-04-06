@@ -124,8 +124,9 @@ SeVC dataset focuses on 1,591 open source C/C++ programs from the NVD and 14,000
     ```
     $ cd Implementation/model/
 
-    #TODO
+    # NOTE: VulDeeLocator has source code to keras the authors modified
     $ mkdir ./model/
     $ mkdir -p ./result/BGRU/
+    $ mkdir -p ./result_analyze/BGRU/
     $ python bgru.py
     ```
