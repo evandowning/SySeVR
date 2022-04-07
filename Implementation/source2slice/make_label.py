@@ -13,7 +13,8 @@ f = open("label_vec_type.pkl", 'rb')
 label_vec_type = pickle.load(f)
 f.close()
 
-f = open("dict_testcase2code.pkl",'rb')
+#f = open("dict_testcase2code.pkl",'rb')
+f = open("dict_testcase2code_new.pkl",'rb')
 dict_testcase2code = pickle.load(f)
 f.close()
 
@@ -123,7 +124,8 @@ def make_label(path, dict_vuln2testcase, _type):
 
 
 def main():
-    f = open("dict_flawline2filepath.pkl", 'rb')
+    #f = open("dict_flawline2filepath.pkl", 'rb')
+    f = open("dict_flawline2filepath_new.pkl", 'rb')
     dict_vuln2testcase = pickle.load(f)
     f.close()
     _type = False
@@ -131,36 +133,40 @@ def main():
     lang = 'C/test_data/' + time
     
     path = os.path.join(lang, 'api_slices.txt')
-    list_all_apilabel, list_all_vulline = make_label(path, dict_vuln2testcase, _type)
-    dec_path = os.path.join(lang, 'api_slices_label.pkl')
-    f = open(dec_path, 'wb')
-    pickle.dump(list_all_apilabel, f, True)
-    f.close()
-    dec_path = os.path.join(lang, 'api_slices_vulline.pkl')
-    f = open(dec_path, 'wb')
-    pickle.dump(list_all_vulline, f)
-    f.close()
+    if os.path.exists(path):
+        list_all_apilabel, list_all_vulline = make_label(path, dict_vuln2testcase, _type)
+        dec_path = os.path.join(lang, 'api_slices_label.pkl')
+        f = open(dec_path, 'wb')
+        pickle.dump(list_all_apilabel, f, True)
+        f.close()
+        dec_path = os.path.join(lang, 'api_slices_vulline.pkl')
+        f = open(dec_path, 'wb')
+        pickle.dump(list_all_vulline, f)
+        f.close()
     
     path = os.path.join(lang, 'arraysuse_slices.txt')
-    list_all_arraylabel,_ = make_label(path, dict_vuln2testcase, _type)
-    dec_path = os.path.join(lang, 'arraysuse_slices_label.pkl')
-    f = open(dec_path, 'wb')
-    pickle.dump(list_all_arraylabel, f, True)
-    f.close()
+    if os.path.exists(path):
+        list_all_arraylabel,_ = make_label(path, dict_vuln2testcase, _type)
+        dec_path = os.path.join(lang, 'arraysuse_slices_label.pkl')
+        f = open(dec_path, 'wb')
+        pickle.dump(list_all_arraylabel, f, True)
+        f.close()
     
     path = os.path.join(lang, 'pointersuse_slices.txt')
-    list_all_pointerlabel,_ = make_label(path, dict_vuln2testcase, _type)
-    dec_path = os.path.join(lang, 'pointersuse_slices_label.pkl')
-    f = open(dec_path, 'wb')
-    pickle.dump(list_all_pointerlabel, f, True)
-    f.close()
+    if os.path.exists(path):
+        list_all_pointerlabel,_ = make_label(path, dict_vuln2testcase, _type)
+        dec_path = os.path.join(lang, 'pointersuse_slices_label.pkl')
+        f = open(dec_path, 'wb')
+        pickle.dump(list_all_pointerlabel, f, True)
+        f.close()
  
     path = os.path.join(lang, 'integeroverflow_slices.txt')
-    list_all_exprlabel,_ = make_label(path, dict_vuln2testcase, _type)
-    dec_path = os.path.join(lang, 'integeroverflow_slices_label.pkl')
-    f = open(dec_path, 'wb')
-    pickle.dump(list_all_exprlabel, f, True)
-    f.close()
+    if os.path.exists(path):
+        list_all_exprlabel,_ = make_label(path, dict_vuln2testcase, _type)
+        dec_path = os.path.join(lang, 'integeroverflow_slices_label.pkl')
+        f = open(dec_path, 'wb')
+        pickle.dump(list_all_exprlabel, f, True)
+        f.close()
     
 
 if __name__ == '__main__':
