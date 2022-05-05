@@ -14,8 +14,8 @@ SeVC dataset focuses on 1,591 open source C/C++ programs from the NVD and 14,000
 
 ## Usage
   * Install [anaconda](https://docs.anaconda.com/anaconda/install/linux/) and create environments
-    * `$ conda create -n vdl_data python=2.7
-    * `$ conda create -n vdl python=3.6
+    * `$ conda create -n vdl_data python=2.7`
+    * `$ conda create -n vdl python=3.6`
   * Download [Apache Ant 1.9](https://ant.apache.org/bindownload.cgi)
   * Download [Java 7](https://www.oracle.com/java/technologies/javase/javase7-archive-downloads.html)
   * Modify `setup.sh` to point where `JAVA_HOME` and `Apache Ant` folders are located.
