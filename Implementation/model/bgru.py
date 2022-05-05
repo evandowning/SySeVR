@@ -130,12 +130,12 @@ def main(traindataSet_path, testdataSet_path, realtestpath, weightpath, resultpa
     pickle.dump(result[1], f)
     f.close()
 
-    f_TP = open("./result_analyze/BGRU/TP_filenames.txt","ab+")
+    f_TP = open("./result_analyze/BGRU/TP_filenames.txt","a+")
     for i in range(len(result[1])):
         TP_index = result[1][i]
         f_TP.write(str(filenames[TP_index])+'\n')
 
-    f_FP = open("./result_analyze/BGRU/FP_filenames.txt","ab+")
+    f_FP = open("./result_analyze/BGRU/FP_filenames.txt","a+")
     for j in range(len(result[2])):
         FP_index = result[2][j]
         f_FP.write(str(filenames[FP_index])+'\n')

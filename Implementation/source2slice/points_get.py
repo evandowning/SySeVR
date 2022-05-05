@@ -2,13 +2,26 @@
 from access_db_operate import *
 
 
-def get_all_sensitiveAPI(db):
+def get_all_sensitiveAPI(db,fout):
     fin = open("sensitive_func.pkl", 'rb')
     list_sensitive_funcname = pickle.load(fin)
     fin.close()
 
+    length = len(list_sensitive_funcname)
+    print 'len: ', length
+#   list_sensitive_funcname = ['getwd']  # this worked just fine
+    # Without anything, stops at 455
+    list_sensitive_funcname = list_sensitive_funcname[455:] # this stops working at 'main'
+    # After this line, script finishes
+
     _dict = {}
-    for func_name in list_sensitive_funcname:
+    for e,func_name in enumerate(list_sensitive_funcname):
+        print 'getting calls for ', func_name, ' index: ', str(e)
+
+        # TODO - make new dictionary each time & dump
+        pickle.dump(_dict, fout, True)
+        _dict = {}
+
         list_callee_cfgnodeID = []
         if func_name.find('main') != -1:
             list_main_func = []
@@ -16,7 +29,8 @@ def get_all_sensitiveAPI(db):
 
             if list_mainfunc_node != []:
                 file_path = getFuncFile(db, list_mainfunc_node[0]._id)
-                testID = file_path.split('/')[-2]
+                testID = file_path.split('/')[-1]
+                testID = '_'.join(testID.split('_')[:-1])
                 for mainfunc in list_mainfunc_node:
                     list_parameters = get_parameter_by_funcid(db, mainfunc._id)
 
@@ -31,12 +45,12 @@ def get_all_sensitiveAPI(db):
             if list_callee_id == []:
                 continue
 
-            
             for _id in list_callee_id:
                 cfgnode = getCFGNodeByCallee(db, _id)
                 if cfgnode != None:
                     file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
-                    testID = file_path.split('/')[-2]
+                    testID = file_path.split('/')[-1]
+                    testID = '_'.join(testID.split('_')[:-1])
                     list_callee_cfgnodeID.append([testID, ([str(cfgnode._id)], str(cfgnode.properties['functionId']), func_name)])
 
         if list_callee_cfgnodeID != []:
@@ -58,7 +72,8 @@ def get_all_pointer(db):
     for node_id in list_pointers_node:
         cfgnode = getNode(db, node_id)
         file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
-        testID = file_path.split('/')[-2]
+        testID = file_path.split('/')[-1]
+        testID = '_'.join(testID.split('_')[:-1])
         pointer_defnode = get_def_node(db, cfgnode._id)
         pointer_name = []
         for node in pointer_defnode:
@@ -79,7 +94,8 @@ def get_all_array(db):
     list_arrays_node = get_arrays_node(db)
     for cfgnode in list_arrays_node:
         file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
-        testID = file_path.split('/')[-2]
+        testID = file_path.split('/')[-1]
+        testID = '_'.join(testID.split('_')[:-1])
         array_defnode = get_def_node(db, cfgnode._id)
         array_name = []
         for node in array_defnode:
@@ -101,9 +117,10 @@ def get_all_pointer_use(db):
     for node_id in list_pointers_node:
         cfgnode = getNode(db, node_id)
         file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
-        testID = file_path.split('/')[-2]
+        testID = file_path.split('/')[-1]
+        testID = '_'.join(testID.split('_')[:-1])
         pointer_defnode = get_def_node(db, cfgnode._id)
-        
+
         _temp_list = []
         for node in pointer_defnode:
             name = node.properties['code'].strip()
@@ -119,7 +136,7 @@ def get_all_pointer_use(db):
 
             list_usenodes += list_defnodes
             
-            print len(list_usenodes)
+            #print len(list_usenodes)
             for i in list_usenodes:
                 if str(i).find("location")==-1:
                     list_usenodes.remove(i)
@@ -128,11 +145,11 @@ def get_all_pointer_use(db):
             for i in list_usenodes:
                 #print(i)
                 if 'location:' in str(i):
-                    print(str(i))
+                    #print(str(i))
                     location=str(i).split(",type:")[0].split("location:")[1][1:-1].split(":")
                     count=int(location[0])
                     loc_list.append(count)
-            print loc_list
+            #print loc_list
             if len(loc_list)!=0:
                 a=loc_list.index(max(loc_list))
                 final_list.append(list_usenodes[a])
@@ -155,7 +172,8 @@ def get_all_array_use(db):
     list_arrays_node = get_arrays_node(db)
     for cfgnode in list_arrays_node:
         file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
-        testID = file_path.split('/')[-2]
+        testID = file_path.split('/')[-1]
+        testID = '_'.join(testID.split('_')[:-1])
         array_defnode = get_def_node(db, cfgnode._id)
         _temp_list = []
         for node in array_defnode:
@@ -189,7 +207,10 @@ def get_all_array_use(db):
 def get_all_integeroverflow_point(db):
     _dict = {}
     list_exprstmt_node = get_exprstmt_node(db)
-    for cfgnode in list_exprstmt_node:
+    for node_id in list_exprstmt_node:
+        query_str = "g.v(%d)" % node_id
+        cfgnode = db.runGremlinQuery(query_str)
+
         if cfgnode.properties['code'].find(' = ') > -1:
             code = cfgnode.properties['code'].split(' = ')[-1]
             pattern = re.compile("((?:_|[A-Za-z])\w*(?:\s(?:\+|\-|\*|\/)\s(?:_|[A-Za-z])\w*)+)")                
@@ -199,7 +220,8 @@ def get_all_integeroverflow_point(db):
                 continue
             else:
                 file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
-                testID = file_path.split('/')[-2]
+                testID = file_path.split('/')[-1]
+                testID = '_'.join(testID.split('_')[:-1])
                 name = cfgnode.properties['code'].strip()
 
                 if testID in _dict.keys():
@@ -216,7 +238,8 @@ def get_all_integeroverflow_point(db):
 
             else:
                 file_path = getFuncFile(db, int(cfgnode.properties['functionId']))
-                testID = file_path.split('/')[-2]
+                testID = file_path.split('/')[-1]
+                testID = '_'.join(testID.split('_')[:-1])
                 name = cfgnode.properties['code'].strip()
 
                 if testID in _dict.keys():
@@ -231,24 +254,33 @@ if __name__ == '__main__':
     j = JoernSteps()
     j.connectToDatabase()
 
-    _dict = get_all_sensitiveAPI(j)
+    #NOTE: incrementally dumpt dictionary
+    print 'sensifunc_slice_points'
+#   _dict = get_all_sensitiveAPI(j)
     f = open("sensifunc_slice_points.pkl", 'wb')
+    _dict = get_all_sensitiveAPI(j,f)
     pickle.dump(_dict, f, True)
     f.close()
 #   print _dict
 
+    #NOTE: all other functions ran fine
+    sys.exit()
+
+    print 'pointuse_slice_points'
     _dict = get_all_pointer_use(j)
     f = open("pointuse_slice_points.pkl", 'wb')
     pickle.dump(_dict, f, True)
     f.close()
 #   print _dict
 
+    print 'arraysuse_slice_points'
     _dict = get_all_array_use(j)
     f = open("arraysuse_slice_points.pkl", 'wb')
     pickle.dump(_dict, f, True)
     f.close()
 #   print _dict
 
+    print 'integeroverflow_slice_points'
     _dict = get_all_integeroverflow_point(j)
     f = open("integeroverflow_slice_points_new.pkl", 'wb')
     pickle.dump(_dict, f, True)

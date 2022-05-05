@@ -5,8 +5,8 @@
 
     $ cd Implementation/source2slice/
 
-    # Takes about 45 seconds
-    $ time /data/evan/joern/jdk1.7.0_80/bin/java -jar /data/evan/joern/joern-0.3.1/bin/joern.jar /data/evan/vulchecker/labeled-dataset-master/CWE416/source_files/ > joern_416_stdout.txt 2> joern_416_stderr.txt
+    # Takes about 25 minutes
+    $ time ./import.sh
     ```
   * Start Neo4j console
     ```
@@ -29,7 +29,9 @@
     $ ./create_label.sh
 
     $ conda activate vdl_data
-    (vdl_data) $ time ./extract.sh
+
+    # Takes about 3300 minutes (2.3 days)
+    (vdl_data) $ time ./extract.sh &> extract_stdout_stderr.txt
     ```
   * Exit Neo4j console
 
@@ -41,6 +43,8 @@
 
     $ conda activate vdl
     $ conda install -c glemaitre imbalanced-learn
+
+    # Takes about 
     (vdl) $ time ./preprocess.sh
     ```
 
@@ -53,5 +57,7 @@ $ rm -rf ./result/; mkdir -p ./result/BGRU/
 $ rm -rf ./result_analyze/; mkdir -p ./result_analyze/BGRU/
 
 $ conda activate vdl
+
+# Takes about 
 (vdl) $ time python bgru.py
 ```

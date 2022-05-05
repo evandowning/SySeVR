@@ -39,12 +39,12 @@ for filename in os.listdir(slice_path):
         if sentences[-1] == '\r':
             del sentences[-1]
         labellist = labellists[index]
-        for labels in labellist:
-            labels = str(labels)
-            if '1' in labels:
-                label = 1
-            else:
-                label = 0
+
+        if 1 in labellist:
+            label = 1
+        else:
+            label = 0
+
         for sentence in sentences:
             f.write(str(sentence)+'\n')
         f.write(str(label)+'\n')

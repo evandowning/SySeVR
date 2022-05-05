@@ -10,6 +10,7 @@ def _main():
     parser.add_argument('--folder', help='dataset folder', required=True)
     parser.add_argument('--outcode', help='output code filename', required=True)
     parser.add_argument('--outpath', help='output path filename', required=True)
+    parser.add_argument('--outvuln', help='output path filename', required=True)
 
     args = parser.parse_args()
 
@@ -17,9 +18,11 @@ def _main():
     folder = args.folder
     codeFN = args.outcode
     pathFN = args.outpath
+    vulnFN = args.outvuln
 
     codeDict = dict()
     pathDict = dict()
+    vulnList = set()
 
     # For each CWE
     for cweFolder in os.listdir(folder):
@@ -34,6 +37,8 @@ def _main():
 
             cweLabel = fn.split('_')[0]
             cweLabel = cweLabel.replace('CWE','CWE-')
+
+            vulnList.add(cweLabel)
 
             # Read file content
             with open(path,'r') as fr:
@@ -77,6 +82,8 @@ def _main():
         pickle.dump(codeDict, fw, True)
     with open(pathFN,'wb') as fw:
         pickle.dump(pathDict, fw, True)
+    with open(vulnFN,'wb') as fw:
+        pickle.dump(list(vulnList), fw, True)
 
 if __name__ == '__main__':
     _main()

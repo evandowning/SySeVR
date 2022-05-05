@@ -9,7 +9,8 @@ f.close()
 
 #print dict_cwe2father['CWE-787']
 
-f = open("label_vec_type.pkl", 'rb')
+#f = open("label_vec_type.pkl", 'rb')
+f = open("label_vec_type_new.pkl", 'rb')
 label_vec_type = pickle.load(f)
 f.close()
 
@@ -45,6 +46,8 @@ def get_label_cwe(cweid, label_cwe):
     return label_cwe
 
 
+# NOTE: because create_label.py extracted source line may not (exactly) match what
+#       was parsed: "free(data);" versus "free ( data );"
 def make_label(path, dict_vuln2testcase, _type):
     f = open(path, 'r')
     context = f.read().split('------------------------------')[:-1]
@@ -52,76 +55,43 @@ def make_label(path, dict_vuln2testcase, _type):
 
     context[0] = '\n' + context[0]
 
-    list_all_label = []
-    list_all_vulline = []
+    list_all_label = list()
+    list_all_vulline = list()
+
     for _slice in context:
-        vulline = []
-        index_line = _slice.split('\n')[1] 
-        list_codes = _slice.split('\n')[2:-1] 
-        case_name = index_line.split(' ')[1]
-        key_name = '/'.join(index_line.split(' ')[1].split('/')[-2:])
-        print index_line
+        list_label = [0] * len(label_vec_type)
+        vulline = list()
 
+        index_line = _slice.split('\n')[1]
+        list_codes = _slice.split('\n')[2:-1]
+        key_name = index_line.split(' ')[1]
+
+        # If we have a label for this source file
         if key_name in dict_vuln2testcase.keys():
-            list_codeline = [code.split(' ')[-1] for code in list_codes]
-            dict = dict_vuln2testcase[key_name]
+            # Get CWE labels for lines
+            labels_true = dict_vuln2testcase[key_name]
 
-            _dict_cwe2line_target = {}
-            _dict_cwe2line = {}
-            for _dict in dict: 
-                for key in _dict.keys():
-                    if _dict[key] not in _dict_cwe2line_target.keys():
-                        _dict_cwe2line_target[_dict[key]] = [key] 
-                    else:
-                        _dict_cwe2line_target[_dict[key]].append(key)
+            # Get CWE
+            cwe = labels_true[0].values()[0]
 
-                
-                for line in list_codeline:
-                    line = line.strip()
-                    if line in _dict.keys():
-                        if not ' '.join((list_codes[list_codeline.index(line)].strip()).split(' ')[:-1]) == dict_testcase2code[key_name+"/"+line].strip():
-                            continue
-                        cweid = _dict[line]
-                        vulline.append(list_codeline.index(line))
+            # Create list label
+            list_label = get_label_veclist([cwe])
 
-                        if cweid not in _dict_cwe2line.keys():
-                            _dict_cwe2line[cweid] = [line]
-                        else:
-                            _dict_cwe2line[cweid].append(line)
+            # Get each line number in source file
+            line_numbers = [code.split(' ')[-1] for code in list_codes]
 
-            if _type:
-                list_vuln_cwe = []
-                for key in _dict_cwe2line.keys():
-                    if key == 'Any...':
-                        continue
-                    if len(_dict_cwe2line[key]) == len(_dict_cwe2line_target[key]):
-                        label_cwe = []
-                        label_cwe = get_label_cwe(key, label_cwe)
-                        list_vuln_cwe += label_cwe
+            # For each vulnerable line, get line index in codelist
+            vulline = [line_numbers.index(d.keys()[0]) for d in labels_true if d.keys()[0] in line_numbers]
 
-            else:
-                list_vuln_cwe = []
-                for key in _dict_cwe2line.keys():
-                    if key == 'Any...':
-                        continue
-                    label_cwe = []
-                    label_cwe = get_label_cwe(key, label_cwe)
-                    list_vuln_cwe += label_cwe
-
-            if list_vuln_cwe == []:
+            # If vulnerable line didn't exist, clear list_label
+            if len(vulline) == 0:
                 list_label = [0] * len(label_vec_type)
-            else:
-                list_vuln_cwe = list(set(list_vuln_cwe))
-                list_label = get_label_veclist(list_vuln_cwe)
-            
-        else:
-            list_label = [0] * len(label_vec_type)
 
+        # Append data to lists
         list_all_label.append(list_label)
         list_all_vulline.append(vulline)
 
     return list_all_label, list_all_vulline
-
 
 def main():
     #f = open("dict_flawline2filepath.pkl", 'rb')

@@ -331,6 +331,7 @@ def api_slice():
     dict_unsliced_sensifunc = pickle.load(f)
     f.close()
     for key in dict_unsliced_sensifunc.keys():#key is testID
+        print 'processing ', key
 
         for _t in dict_unsliced_sensifunc[key]:
             list_sensitive_funcid = _t[0]
@@ -341,10 +342,18 @@ def api_slice():
                 continue #todo
             else:
                 slice_dir = 2
+
                 pdg = getFuncPDGById(key, pdg_funcid)
                 if pdg == False:
                     print 'error'
                     exit()
+
+                #TODO
+                # If directory doesn't exist
+                testDir = os.path.join('dict_call2cfgNodeID_funcID',key)
+                if not os.path.exists(testDir):
+                    print '\tDoes not exist ', testDir
+                    continue
 
                 list_code, startline, startline_path = program_slice(pdg, list_sensitive_funcid, slice_dir, key)
                 #print len(list_code)

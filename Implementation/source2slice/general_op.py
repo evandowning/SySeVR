@@ -64,7 +64,9 @@ def getFuncPDGBynodeIDAndtestID(list_cfgNodeID_funcID, testID):
     for _tuple in list_cfgNodeID_funcID:
         cfgNodeID = _tuple[0]
         func_id = _tuple[1]
-        path = os.path.join('pdg_db', testID)
+        #TODO
+        #path = os.path.join('pdg_db', testID)
+        path = os.path.join('pdg_db', 'source_files')
         for _file in os.listdir(path):
             if _file.split('_')[-1] == func_id:
                 fpath = os.path.join(path, _file)
@@ -103,7 +105,9 @@ def getFuncPDGBynodeIDAndtestID_noctrl(list_cfgNodeID_funcID, testID):
 
 
 def getFuncPDGByfuncIDAndtestID(func_ID, testID):
-    path = os.path.join('pdg_db', testID)
+    #TODO
+    #path = os.path.join('pdg_db', testID)
+    path = os.path.join('pdg_db', 'source_files')
     pdg = False
     for _file in os.listdir(path):
         if _file.split('_')[-1] == str(func_ID):
@@ -547,7 +551,9 @@ def sortedNodesByLoc(list_node):
 
 
 def getFuncPDGById(testID, pdg_funcid):
-    file_dir = os.path.join("pdg_db", testID)
+    #TODO
+    #file_dir = os.path.join("pdg_db", testID)
+    file_dir = os.path.join('pdg_db', 'source_files')
 
     for _file in os.listdir(file_dir):
         func_id = _file.split('_')[-1]
@@ -559,7 +565,7 @@ def getFuncPDGById(testID, pdg_funcid):
             f.close()
 
             return pdg
-
+    return False
 
 def getFuncPDGById_noctrl(testID, pdg_funcid):
     for _dir in os.listdir("pdg/"):
@@ -583,7 +589,9 @@ def getFuncPDGById_noctrl(testID, pdg_funcid):
 
 
 def getFuncPDGByNameAndtestID(func_name, testID):
-    path = os.path.join('pdg_db', testID)
+    # TODO - does this help?
+    #path = os.path.join('pdg_db', testID)
+    path = os.path.join('pdg_db', 'source_files')
     pdg = False
     for _file in os.listdir(path):
         if '_'.join(_file.split('_')[:-1]) == func_name:

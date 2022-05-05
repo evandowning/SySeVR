@@ -33,44 +33,17 @@ def get_all_def_bydefnode(db, node_id):
 
 
 def get_exprstmt_node(db):
-    query_expr_str = "queryNodeIndex('type:ExpressionStatement')"
-    #results = db.runGremlinQuery(query_expr_str)
+    query_expr_str = "queryNodeIndex('type:ExpressionStatement').id"
     results_1 = db.runGremlinQuery(query_expr_str)
 
-    query_iddecl_str = 'queryNodeIndex("type:IdentifierDeclStatement")'
+    query_iddecl_str = 'queryNodeIndex("type:IdentifierDeclStatement").id'
     results_2 = db.runGremlinQuery(query_iddecl_str)
 
     results = results_1 + results_2
 
     return results
 
-#TODO
 def get_pointers_node(db):
-#   list_pointers_node = []
-#   query_iddecl_str = 'queryNodeIndex("type:IdentifierDeclStatement")'
-
-#   results = db.runGremlinQuery(query_iddecl_str)
-
-#   if results != []:
-#       for re in results:
-#           code = re.properties['code']
-#           if code.find(' = ') != -1:
-#               code = code.split(' = ')[0]
-
-#           if code.find('*') != -1:
-#               list_pointers_node.append(re)
-
-#   query_param_str = 'queryNodeIndex("type:Parameter")'
-#   results = db.runGremlinQuery(query_param_str)
-#   if results != []:
-#       for re in results:
-#           code = re.properties['code']
-#           if code.find(' = ') != -1:
-#               code = code.split(' = ')[0]
-
-#           if code.find('*') != -1:
-#               list_pointers_node.append(re)
-
     list_pointers_node = set()
 
     query_iddecl_str = 'queryNodeIndex("type:IdentifierDeclStatement").id'
@@ -86,8 +59,6 @@ def get_pointers_node(db):
         if code.find('*') != -1:
             list_pointers_node.add(node_id)
 
-#   print(len(list_pointers_node))
-
     query_param_str = 'queryNodeIndex("type:Parameter").id'
     results = db.runGremlinQuery(query_param_str)
     for node_id in results:
@@ -101,35 +72,36 @@ def get_pointers_node(db):
         if code.find('*') != -1:
             list_pointers_node.add(node_id)
 
-#   print(len(list_pointers_node))
-#   sys.exit()
-
     return list_pointers_node
 
 
 def get_arrays_node(db):
     list_arrays_node = []
-    query_iddecl_str = "queryNodeIndex('type:IdentifierDeclStatement')"
+    query_iddecl_str = "queryNodeIndex('type:IdentifierDeclStatement').id"
     results = db.runGremlinQuery(query_iddecl_str)
     if results != []:
-        for re in results:
-            code = re.properties['code']
+        for node_id in results:
+            query_str = "g.v(%d)" % node_id
+            node = db.runGremlinQuery(query_str)
+            code = node.properties['code']
             if code.find(' = ') != -1:
                 code = code.split(' = ')[0]
 
             if code.find(' [ ') != -1:
-                list_arrays_node.append(re)
+                list_arrays_node.append(node)
 
-    query_param_str = "queryNodeIndex('type:Parameter')"
+    query_param_str = "queryNodeIndex('type:Parameter').id"
     results = db.runGremlinQuery(query_param_str)
     if results != []:
-        for re in results:
-            code = re.properties['code']
+        for node_id in results:
+            query_str = "g.v(%d)" % node_id
+            node = db.runGremlinQuery(query_str)
+            code = node.properties['code']
             if code.find(' = ') != -1:
                 code = code.split(' = ')[0]
 
             if code.find(' [ ') != -1:
-                list_arrays_node.append(re)
+                list_arrays_node.append(node)
 
     return list_arrays_node
 
@@ -398,7 +370,9 @@ def getFuncNodeByFile(db, filenodeID):
 
 
 def getAllFuncfileByTestID(db, testID):
-    testID = '*/'+ testID + '/*'
+    # NOTE - file won't be in a directory by itself, so we'll have to do a global star
+    #testID = '*/'+ testID + '/*'
+    testID = '*'+ testID + '*'
     query_str = "queryNodeIndex('type:File AND filepath:%s').id" % testID
     results = db.runGremlinQuery(query_str)
     return results
@@ -432,7 +406,6 @@ def getCalleeNode(db, func_id):
     results = db.runGremlinQuery(query_str)
     return results
 
-
 def get_all_calls_node(db, testID):
     list_all_funcID = [node._id for node in getFuncNodeInTestID(db, testID)]
 #   print "list_all_funcID", list_all_funcID
@@ -442,6 +415,9 @@ def get_all_calls_node(db, testID):
         return False
     list_all_callee_node = []
     for func_id in list_all_funcID:#allfile in a testID
+
+        callees = getCalleeNode(db, func_id)
+
         list_all_callee_node += getCalleeNode(db, func_id)
 
     if list_all_callee_node == []:
@@ -550,6 +526,8 @@ def getCallGraph(db, testID):
     list_all_func_node = getFuncNodeInTestID(db, testID)
     #print "list_all_func_node", list_all_func_node
     if list_all_func_node == []:
+        return False
+    if list_all_func_node is False:
         return False
     
     call_g = Graph(directed=True)
@@ -672,7 +650,7 @@ def getCallGraph(db, testID):
 
                         else:
                             continue
-                        
+
                     else:
                         continue
 
@@ -700,7 +678,6 @@ def getCallGraph(db, testID):
                     #print 2
 
                     if callee_cfgnode == None:
-                                                
                         print 'ERROR', callee_cfgnode
                         continue
                     else:
@@ -728,14 +705,21 @@ if __name__ == '__main__':
     j = JoernSteps()
     j.connectToDatabase()
 
-    pdg_db_path = "pdg_db"
+    pdg_db_path = "pdg_db/source_files/"
     list_testID = os.listdir(pdg_db_path)
 #   print list_testID
     for testID in list_testID:
         #if testID != '69055':
         #    continue
 
+        print 'Parsing ', testID
+
+        # Convert test id for CWEs
+        if 'CWE' in testID:
+            testID = '_'.join(testID.split('_')[:-2])
+
         if os.path.exists(os.path.join("dict_call2cfgNodeID_funcID", str(testID))):
+            print 'Error, ', testID, ' already exists.'
             continue
 
         call_g = getCallGraph(j, testID)
@@ -756,7 +740,7 @@ if __name__ == '__main__':
             os.mkdir(os.path.join("dict_call2cfgNodeID_funcID", str(testID)))
 
         filepath = os.path.join("dict_call2cfgNodeID_funcID", str(testID), "dict.pkl")
-        
+
 #       print _dict
         f = open(filepath, 'wb')
         pickle.dump(_dict, f, True)
