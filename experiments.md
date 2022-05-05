@@ -5,12 +5,13 @@
 
     $ cd Implementation/source2slice/
 
-    # Takes about 25 minutes
+    # Takes about 11 minutes
     $ time ./import.sh
     ```
   * Start Neo4j console
     ```
     # Modify Neo4j config files as needed: https://joern.readthedocs.io/en/latest/import.html
+    # I.e., point it to the .joernIndex folder
 
     $ cd /data/joern/neo4j-community-2.1.8/
     $ ulimit -n 60000
@@ -20,20 +21,23 @@
         Add "wrapper.java.additional=-XX:MaxPermSize=512m"
     $ JAVA_HOME=/data/evan/joern/jdk1.7.0_80/ ./bin/neo4j console
     ```
-  * Install Anaconda and create an environment `vdl_data` that uses Python 2.7.18
   * Parse dataset
     ```
     $ cd Implementation/source2slice/
 
-    # Takes about 14 minutes
-    $ ./create_label.sh
-
     $ conda activate vdl_data
 
-    # Takes about 3300 minutes (2.3 days)
-    (vdl_data) $ time ./extract.sh &> extract_stdout_stderr.txt
+    # Takes about 10 seconds
+    (vdl_data) $ ./create_label.sh
+
+    # Bad practice, but I just copy the "Implementation/" folder for each of the CWEs -- makes things easier to run for now.
+    # Just make sure you restart Neo4j each time so it's accessing the correct .joernIndex folder location
+
+    # Takes about 50 minutes
+    (vdl_data) $ ./set_416.sh
+    (vdl_data) $ time ./extract.sh &> extract_416_stdout_stderr.txt
     ```
-  * Exit Neo4j console
+  * Exit Neo4j console (you won't need it anymore)
 
 # Preprocess Dataset
   * Create an Anaconda environment `vdl` that uses Python 3.6
@@ -42,9 +46,10 @@
     $ cd Implementation/data_preprocess/
 
     $ conda activate vdl
-    $ conda install -c glemaitre imbalanced-learn
+    (vdl) $ conda install -c glemaitre imbalanced-learn
+    (vdl) $ pip install -r requirements.txt
 
-    # Takes about 
+    # Takes about 1 minute
     (vdl) $ time ./preprocess.sh
     ```
 
@@ -52,12 +57,10 @@
 ```
 $ cd Implementation/model/
 
-$ rm -rf ./model/; mkdir ./model/
-$ rm -rf ./result/; mkdir -p ./result/BGRU/
-$ rm -rf ./result_analyze/; mkdir -p ./result_analyze/BGRU/
-
 $ conda activate vdl
 
-# Takes about 
-(vdl) $ time python bgru.py
+(vdl) $ ./clean.sh
+
+# Takes about 35 minutes
+(vdl) $ time python bgru.py &> bgru_stdout_stderr.txt
 ```

@@ -263,9 +263,6 @@ if __name__ == '__main__':
     f.close()
 #   print _dict
 
-    #NOTE: all other functions ran fine
-    sys.exit()
-
     print 'pointuse_slice_points'
     _dict = get_all_pointer_use(j)
     f = open("pointuse_slice_points.pkl", 'wb')

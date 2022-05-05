@@ -54,7 +54,10 @@ def evaluate_w2vModel(w2vModelPath):
     model = Word2Vec.load(w2vModelPath)
     for sign in ['(', '+', '-', '*', 'main']:
         print(sign, ":")
-        print(model.most_similar_cosmul(positive=[sign], topn=10))
+        try:
+            print(model.most_similar_cosmul(positive=[sign], topn=10))
+        except KeyError as e:
+            print(str(e))
     
 def main():
     dec_tokenFlaw_path = ['./data/corpus/SARD/']
