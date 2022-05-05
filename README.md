@@ -21,7 +21,6 @@ SeVC dataset focuses on 1,591 open source C/C++ programs from the NVD and 14,000
   * Modify `setup.sh` to point where `JAVA_HOME` and `Apache Ant` folders are located.
   * Install [joern 0.3.1](https://joern.readthedocs.io/en/latest/installation.html) via the following:
     ```
-
     $ mkdir /data/joern/
     $ cp setup.sh /data/joern/
     $ cd /data/joern/

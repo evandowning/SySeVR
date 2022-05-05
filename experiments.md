@@ -1,7 +1,7 @@
 # Parse Dataset
   * Load data via Joern
     ```
-    # The following will create ".joernIndex/"
+    # The following will create ".joernIndex_*" folders
 
     $ cd Implementation/source2slice/
 
@@ -40,18 +40,16 @@
   * Exit Neo4j console (you won't need it anymore)
 
 # Preprocess Dataset
-  * Create an Anaconda environment `vdl` that uses Python 3.6
-  * Preprocess dataset
-    ```
-    $ cd Implementation/data_preprocess/
+```
+$ cd Implementation/data_preprocess/
 
-    $ conda activate vdl
-    (vdl) $ conda install -c glemaitre imbalanced-learn
-    (vdl) $ pip install -r requirements.txt
+$ conda activate vdl
+(vdl) $ conda install -c glemaitre imbalanced-learn
+(vdl) $ pip install -r requirements.txt
 
-    # Takes about 1 minute
-    (vdl) $ time ./preprocess.sh
-    ```
+# Takes about 1 minute
+(vdl) $ time ./preprocess.sh
+```
 
 # Train Models
 ```
