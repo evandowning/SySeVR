@@ -23,9 +23,9 @@ This function is used to create input of deep learning model
 '''
 def generate_corpus(w2vModelPath, samples): 
     model = Word2Vec.load(w2vModelPath)
-    print("begin generate input...")
+#   print("begin generate input...")
     dl_corpus = [[model[word] for word in sample] for sample in samples]
-    print("generate input success...")
+#   print("generate input success...")
 
     return dl_corpus
 
@@ -49,20 +49,12 @@ def get_dldata(filepath, dlTrainCorpusPath, dlTestCorpusPath, split=0.8, seed=11
 
     folders_train = folders[:int(len(folders)*split)]
     folders_test = folders[int(len(folders)*split):]
-      
+
+    print(len(folders_train),len(folders_test))
+
     for mode in ["api", "arraysuse", "pointersuse", "integeroverflow"]:
-        if mode == "api":
-            N = 4
-            num = [0,1,2,3,4]
-        if mode == "arraysuse":
-            N = 2
-            num = [0,1]
-        if mode == "integeroverflow":
-            N = 2
-            num = [0,1]
-        if mode == "pointersuse":
-            N =6
-            num = [0,1,2,3,4,5]
+        N = 1
+        num = [0]
         for i in num:
             train_set = [[], [], [], [], [], []]
             ids = []
@@ -88,13 +80,10 @@ def get_dldata(filepath, dlTrainCorpusPath, dlTestCorpusPath, split=0.8, seed=11
             f_train.close()
             del train_set
             gc.collect()     
-                    
+
     for mode in ["api", "arraysuse", "pointersuse", "integeroverflow"]:
-        N = 4
-        num = [0,1,2,3]
-        if mode == "pointersuse":
-            N = 8
-            num = [4,5]
+        N = 1
+        num = [0]
         for i in num:
             test_set = [[], [], [], [], [], []]
             ids = []
@@ -107,12 +96,12 @@ def get_dldata(filepath, dlTrainCorpusPath, dlTestCorpusPath, split=0.8, seed=11
                         shutil.copyfile(filepath + folder_test + '/'+filename , dlTestCorpusPath + folder_test + '/'+filename) 
                         f = open(filepath + folder_test + '/' + filename, 'rb')
                         data = pickle.load(f)
-            id_length = len(data[1])
-            for j in range(id_length):
-                ids.append(folder_test)
-            for n in range(5):
-                test_set[n] = test_set[n] + data[n]
-            test_set[-1] = ids
+                        id_length = len(data[1])
+                        for j in range(id_length):
+                            ids.append(folder_test)
+                        for n in range(5):
+                            test_set[n] = test_set[n] + data[n]
+                        test_set[-1] = ids
             if test_set[0] == []:
                 continue
             f_test = open(dlTestCorpusPath + mode + "_" + str(i)+ ".pkl", 'wb')
@@ -126,9 +115,9 @@ if __name__ == "__main__":
     CORPUSPATH = "./data/corpus/SARD/"
     VECTORPATH = "./data/vector/SARD/"
     W2VPATH = "./w2v_model/wordmodel3"
-    print("turn the corpus into vectors...")
+#   print("turn the corpus into vectors...")
     for corpusfiles in os.listdir(CORPUSPATH):
-        print(corpusfiles)
+#       print(corpusfiles)
         if corpusfiles not in os.listdir(VECTORPATH): 
             folder_path = os.path.join(VECTORPATH, corpusfiles)
             os.mkdir(folder_path)
@@ -142,11 +131,11 @@ if __name__ == "__main__":
             f_vector = open(vector_path, 'wb')
             pickle.dump(data, f_vector, protocol=pickle.HIGHEST_PROTOCOL)
             f_vector.close()
-    print("w2v over...")
+#   print("w2v over...")
 
-    print("spliting the train set and test set...")
+#   print("spliting the train set and test set...")
     dlTrainCorpusPath = "./dl_input/cdg_ddg/train/"
     dlTestCorpusPath = "./dl_input/cdg_ddg/test/"
     get_dldata(VECTORPATH, dlTrainCorpusPath, dlTestCorpusPath)
-    
-    print("success!")
+
+#   print("success!")

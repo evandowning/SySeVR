@@ -36,6 +36,8 @@
     # Takes about 50 minutes
     (vdl_data) $ ./set_416.sh
     (vdl_data) $ time ./extract.sh &> extract_416_stdout_stderr.txt
+
+    # Takes 1.5 hours for 415
     ```
   * Exit Neo4j console (you won't need it anymore)
 
@@ -52,13 +54,25 @@ $ conda activate vdl
 ```
 
 # Train Models
-```
-$ cd Implementation/model/
+  * Download custom keras backend
+    ```
+    $ git clone https://github.com/evandowning/VulDeeLocator.git
+    $ cd VulDeeLocator/
+    $ git checkout develop
+    $ cd src/keras/
+    $ unzip keras.zip
+    ```
+  * Train model
+    ```
+    $ cd Implementation/model/
 
-$ conda activate vdl
+    $ conda activate vdl
 
-(vdl) $ ./clean.sh
+    (vdl) $ ./clean.sh
 
-# Takes about 35 minutes
-(vdl) $ time python bgru.py &> bgru_stdout_stderr.txt
-```
+    # Takes about 35 minutes
+    (vdl) $ time python bgru.py &> bgru_stdout_stderr.txt
+
+    # Takes about 15 minutes
+    (vdl) $ time python roc.py
+    ```

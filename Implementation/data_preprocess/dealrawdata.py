@@ -36,7 +36,7 @@ This function is used to cut the dataset, do shuffle and save into pkl file.
 '''
 def dealrawdata(raw_traindataSet_path, raw_testdataSet_path, traindataSet_path, testdataSet_path, batch_size, maxlen, vector_dim):
     print("Loading data...")
-    
+
     for filename in os.listdir(raw_traindataSet_path):
         if not (filename.endswith(".pkl")):
             continue
@@ -48,11 +48,9 @@ def dealrawdata(raw_traindataSet_path, raw_testdataSet_path, traindataSet_path, 
         f_train.close()
 
     for filename in os.listdir(raw_testdataSet_path):
-        if not ("api" in filename):
-            continue
-        print(filename)
         if not (filename.endswith(".pkl")):
             continue
+        print(filename)
         X_test, test_labels, funcs, filenames, testcases = load_data_binary(raw_testdataSet_path + filename, batch_size, maxlen=maxlen, vector_dim=vector_dim)
 
         f_test = open(testdataSet_path + filename, 'wb')
@@ -64,7 +62,7 @@ def load_data_binary(dataSetpath, batch_size, maxlen=None, vector_dim=40, seed=1
     f1 = open(dataSetpath, 'rb')
     X, ids, focus, funcs, filenames, test_cases = pickle.load(f1)
     f1.close()
-	
+
     cut_count = 0
     fill_0_count = 0
     no_change_count = 0
@@ -81,7 +79,7 @@ def load_data_binary(dataSetpath, batch_size, maxlen=None, vector_dim=40, seed=1
             elif len(x) == maxlen:
                 new_X.append(x)
                 no_change_count += 1
-                    
+
             else:
                 startpoint = int(focu - round(maxlen / 2.0))
                 endpoint =  int(startpoint + maxlen)
