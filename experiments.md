@@ -27,17 +27,18 @@
 
     $ conda activate vdl_data
 
-    # Takes about 10 seconds
+    # Takes 10 seconds
     (vdl_data) $ ./create_label.sh
 
     # Bad practice, but I just copy the "Implementation/" folder for each of the CWEs -- makes things easier to run for now.
     # Just make sure you restart Neo4j each time so it's accessing the correct .joernIndex folder location
 
-    # Takes about 50 minutes
+    # Takes 50 minutes
     (vdl_data) $ ./set_416.sh
     (vdl_data) $ time ./extract.sh &> extract_416_stdout_stderr.txt
 
     # Takes 1.5 hours for 415
+    # Takes 413 minutes for 190
     ```
   * Exit Neo4j console (you won't need it anymore)
 
@@ -51,6 +52,8 @@ $ conda activate vdl
 
 # Takes about 1 minute
 (vdl) $ time ./preprocess.sh
+
+# Takes 3 minutes for 415
 ```
 
 # Train Models
@@ -70,9 +73,11 @@ $ conda activate vdl
 
     (vdl) $ ./clean.sh
 
-    # Takes about 35 minutes
+    # Takes 35 minutes
     (vdl) $ time python bgru.py &> bgru_stdout_stderr.txt
+    # 87 minutes for 415
 
-    # Takes about 15 minutes
+    # Takes 15 minutes
     (vdl) $ time python roc.py
+    # 31 minutes for 415
     ```
