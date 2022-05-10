@@ -38,7 +38,10 @@
     (vdl_data) $ time ./extract.sh &> extract_416_stdout_stderr.txt
 
     # Takes 1.5 hours for 415
-    # Takes 413 minutes for 190
+    # Takes 7 hours for 190
+    # Takes 5.5 hours for 191
+    # Takes 12 hours for 121
+    # Takes 13.5 hours for 122
     ```
   * Exit Neo4j console (you won't need it anymore)
 
@@ -54,6 +57,10 @@ $ conda activate vdl
 (vdl) $ time ./preprocess.sh
 
 # Takes 3 minutes for 415
+# Takes 6 minutes for 190
+# Takes 2 minutes for 191
+# Tkaes 45 minutes for 121
+# Tkaes 78 minutes for 122
 ```
 
 # Train Models
@@ -76,8 +83,14 @@ $ conda activate vdl
     # Takes 35 minutes
     (vdl) $ time python bgru.py &> bgru_stdout_stderr.txt
     # 87 minutes for 415
+    # 160 minutes for 190
+    # 83 minutes for 191
+    # 12 hours for 121
+    # 12.8 hours for 122
 
     # Takes 15 minutes
     (vdl) $ time python roc.py
     # 31 minutes for 415
+    # 56 minutes for 190
+    # 30 minutes for 191
     ```
