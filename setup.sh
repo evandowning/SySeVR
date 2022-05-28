@@ -16,8 +16,8 @@ tar xfzv 0.3.1.tar.gz
 cd joern-0.3.1
 wget http://mlsec.org/joern/lib/lib.tar.gz
 tar xfzv lib.tar.gz
-JAVA_HOME=/data/evan/joern/jdk1.7.0_80/ /data/evan/joern/apache-ant-1.9.16/bin/ant
-JAVA_HOME=/data/evan/joern/jdk1.7.0_80/ /data/evan/joern/apache-ant-1.9.16/bin/ant tools
+JAVA_HOME=/home/evan/software/jdk1.7.0_80/ /home/evan/software/apache-ant-1.9.16/bin/ant
+JAVA_HOME=/home/evan/software/jdk1.7.0_80/ /home/evan/software/apache-ant-1.9.16/bin/ant tools
 
 #Neo4j 2.1.8
 cd $INSTALLDIR

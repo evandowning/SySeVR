@@ -6,6 +6,7 @@ from slice_op import *
 from py2neo.packages.httpstream import http
 http.socket_timeout = 9999
 
+from parsed_label_files import *
 
 def get_slice_file_sequence(store_filepath, list_result, count, func_name, startline, filepath_all):
     list_for_line = []
@@ -234,6 +235,7 @@ def get_slice_file_sequence(store_filepath, list_result, count, func_name, start
     f.close()
 
 
+
 def program_slice(pdg, startnodesID, slicetype, testID):#process startnodes as a list, because main func has many different arguments
     list_startnodes = []
     if pdg == False or pdg == None:
@@ -337,11 +339,16 @@ def api_slice():
 
         total = len(dict_unsliced_sensifunc.keys())
 
-        for e,key in enumerate(dict_unsliced_sensifunc.keys()):#key is testID
-            print 'processing ', key
+        func_count = 0
 
-            sys.stderr.write('Processing {0}/{1}\r'.format(e+1,total))
+        for e,key in enumerate(dict_unsliced_sensifunc.keys()):#key is testID
+            func_count += len(dict_unsliced_sensifunc[key])
+
+            #sys.stderr.write('Processing {0}/{1}\r'.format(e+1,total))
+            sys.stderr.write('Processing {0}/{1}/{2}\r'.format(e+1,total,func_count))
             sys.stderr.flush()
+
+           #print('key: ',key)
 
             for _t in dict_unsliced_sensifunc[key]:
                 list_sensitive_funcid = _t[0]
@@ -349,7 +356,7 @@ def api_slice():
                 sensitive_funcname = _t[2]
 
                 if sensitive_funcname.find("main") != -1:
-                    continue #todo
+                    continue
                 else:
                     slice_dir = 2
 
@@ -358,10 +365,8 @@ def api_slice():
                         print 'error'
                         exit()
 
-                    # If directory doesn't exist
-                    testDir = os.path.join('dict_call2cfgNodeID_funcID',key)
-                    if not os.path.exists(testDir):
-                        print '\tDoes not exist ', testDir
+                    f_path = pdg.vs[0]['filepath']
+                    if f_path not in files_of_interest:
                         continue
 
                     list_code, startline, startline_path = program_slice(pdg, list_sensitive_funcid, slice_dir, key)
@@ -373,16 +378,20 @@ def api_slice():
                         fout.close()
                     else:
                         for _list in list_code:
-                            get_slice_file_sequence(store_filepath, _list, count, sensitive_funcname, startline, startline_path)
+                            try:
+                                get_slice_file_sequence(store_filepath, _list, count, sensitive_funcname, startline, startline_path)
+                            except:
+                                pass
                             count += 1
 
-        sys.stderr.write('\n')
+        if len(dict_unsliced_sensifunc.keys()) > 0:
+            sys.stderr.write('\n')
 
     f.close()
 
 def pointers_slice():
     count = 1
-    store_filepath = "C/test_data/4/pointersuse_slices.txt"
+    store_filepath = "C_pointer/test_data/4/pointersuse_slices.txt"
     f = open("pointuse_slice_points.pkl", 'rb')
     dict_unsliced_pointers = pickle.load(f)
 #   print dict_unsliced_pointers
@@ -390,12 +399,14 @@ def pointers_slice():
 
     total = len(dict_unsliced_pointers.keys())
 
+    func_count = 0
+
     l = []
     for e,key in enumerate(dict_unsliced_pointers.keys()):#key is testID
-        sys.stderr.write('Processing {0}/{1}\r'.format(e+1,total))
+        func_count += len(dict_unsliced_pointers[key])
+        #sys.stderr.write('Processing {0}/{1}\r'.format(e+1,total))
+        sys.stderr.write('Processing {0}/{1}/{2}\r'.format(e+1,total,func_count))
         sys.stderr.flush()
-
-        print(key)
 
         if key in l:
             continue
@@ -403,15 +414,18 @@ def pointers_slice():
         for _t in dict_unsliced_pointers[key]:
             list_pointers_funcid = _t[0]
             pdg_funcid = _t[1]
-#           print key, pdg_funcid
+            #print '\t',key, pdg_funcid
             pointers_name = str(_t[2])
-
 
             slice_dir = 2
             pdg = getFuncPDGById(key, pdg_funcid)
             if pdg == False:
                 print 'error'
                 exit()
+
+            f_path = pdg.vs[0]['filepath']
+            if f_path not in files_of_interest:
+                continue
 
             list_code, startline, startline_path = program_slice(pdg, list_pointers_funcid, slice_dir, key)
 
@@ -421,26 +435,33 @@ def pointers_slice():
                 fout.close()
             else:
                 for _list in list_code:
-                    get_slice_file_sequence(store_filepath, _list, count, pointers_name, startline, startline_path)
+                    try:
+                        get_slice_file_sequence(store_filepath, _list, count, pointers_name, startline, startline_path)
+                    except:
+                        pass
                     count += 1
 
     sys.stderr.write('\n')
 
 def arrays_slice():
     count = 1
-    store_filepath = "C/test_data/4/arraysuse_slices.txt"
+    store_filepath = "C_arrays/test_data/4/arraysuse_slices.txt"
     f = open("arraysuse_slice_points.pkl", 'rb')
     dict_unsliced_pointers = pickle.load(f)
     f.close()
 
     total = len(dict_unsliced_pointers.keys())
 
+    func_count = 0
+
     l = []
     for e,key in enumerate(dict_unsliced_pointers.keys()):#key is testID
-        sys.stderr.write('Processing {0}/{1}\r'.format(e+1,total))
+        func_count += len(dict_unsliced_pointers[key])
+        #sys.stderr.write('Processing {0}/{1}\r'.format(e+1,total))
+        sys.stderr.write('Processing {0}/{1}/{2}\r'.format(e+1,total,func_count))
         sys.stderr.flush()
 
-        print(key)
+        #print(key)
         if key in l:
             continue
 
@@ -457,6 +478,11 @@ def arrays_slice():
                 print 'error'
                 exit()
 
+
+            f_path = pdg.vs[0]['filepath']
+            if f_path not in files_of_interest:
+                continue
+
             list_code, startline, startline_path = program_slice(pdg, list_pointers_funcid, slice_dir, key)
 
             if list_code == []:
@@ -465,26 +491,33 @@ def arrays_slice():
                 fout.close()
             else:
                 for _list in list_code:
-                    get_slice_file_sequence(store_filepath, _list, count, arrays_name, startline, startline_path)
+                    try:
+                        get_slice_file_sequence(store_filepath, _list, count, arrays_name, startline, startline_path)
+                    except:
+                        pass
                     count += 1
     sys.stderr.write('\n')
 
 
 def integeroverflow_slice():
     count = 1
-    store_filepath = "C/test_data/4/integeroverflow_slices.txt"
+    store_filepath = "C_integer/test_data/4/integeroverflow_slices.txt"
     f = open("integeroverflow_slice_points_new.pkl", 'rb')
     dict_unsliced_expr = pickle.load(f)
     f.close()
 
     total = len(dict_unsliced_expr.keys())
 
+    func_count = 0
+
     l = []
     for e,key in enumerate(dict_unsliced_expr.keys()):#key is testID
-        sys.stderr.write('Processing {0}/{1}\r'.format(e+1,total))
+        func_count += len(dict_unsliced_expr[key])
+        #sys.stderr.write('Processing {0}/{1}\r'.format(e+1,total))
+        sys.stderr.write('Processing {0}/{1}/{2}\r'.format(e+1,total,func_count))
         sys.stderr.flush()
 
-        print(key)
+        #print(key)
 
         if key in l:
             continue
@@ -501,6 +534,10 @@ def integeroverflow_slice():
                 print 'error'
                 exit()
 
+            f_path = pdg.vs[0]['filepath']
+            if f_path not in files_of_interest:
+                continue
+
             list_code, startline, startline_path = program_slice(pdg, list_expr_funcid, slice_dir, key)
 
             if list_code == []:
@@ -509,7 +546,10 @@ def integeroverflow_slice():
                 fout.close()
             else:
                 for _list in list_code:
-                    get_slice_file_sequence(store_filepath, _list, count, expr_name, startline, startline_path)
+                    try:
+                        get_slice_file_sequence(store_filepath, _list, count, expr_name, startline, startline_path)
+                    except:
+                        pass
                     count += 1
     sys.stderr.write('\n')
      
@@ -517,9 +557,9 @@ def integeroverflow_slice():
 if __name__ == "__main__":
     print 'api slice'
     api_slice()
-#   print 'pointers slice'
-#   pointers_slice()
-#   print 'arrays slice'
-#   arrays_slice()
-#   print 'integeroverflow slice'
-#   integeroverflow_slice()
+    print 'pointers slice'
+    pointers_slice()
+    print 'arrays slice'
+    arrays_slice()
+    print 'integeroverflow slice'
+    integeroverflow_slice()

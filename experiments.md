@@ -93,4 +93,21 @@ $ conda activate vdl
     # 31 minutes for 415
     # 56 minutes for 190
     # 30 minutes for 191
+    # 150 minutes for 121
+    # 150 minutes for 122
+    ```
+
+For wild extract_df.py, run parse_label.py to get only relevant files.
+
+# Evaluate wild dataset
+  * Test model
+    ```
+    $ cd Implementation_wild/model/
+
+    $ conda activate vdl
+
+    (vdl) $ ./clean.sh
+    (vdl) $ ./copy_models.sh
+
+    (vdl) $ time ./pred.sh
     ```
